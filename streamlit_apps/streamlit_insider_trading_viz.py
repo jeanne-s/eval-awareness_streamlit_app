@@ -217,7 +217,7 @@ def create_colorbar(
     min_val: float, max_val: float, color_scheme: str = "RdYlBu_r", title: str = "Score"
 ):
     """Create a large vertical colorbar using matplotlib and display as an image."""
-    fig, ax = plt.subplots(figsize=(2, 8))  # width, height in inches
+    fig, ax = plt.subplots(figsize=(0.5, 8))  # width, height in inches
     norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
     mpl.colorbar.ColorbarBase(
         ax, cmap=plt.get_cmap(color_scheme), norm=norm, orientation="vertical"
@@ -393,7 +393,7 @@ def main():
         st.markdown(highlighted_text, unsafe_allow_html=True)
 
         # Statistics and top tokens side by side
-        col_stats, col_tokens = st.columns([1, 2])
+        col_stats, col_tokens = st.columns([2, 1])
 
         with col_stats:
             st.subheader("Statistics")
