@@ -233,7 +233,7 @@ def create_colorbar(
 
 
 def main():
-    st.title("Token Score Visualization")
+    st.title("What aspects of the insider trading prompts induce eval-awareness?")
 
     # Sidebar controls
     st.sidebar.header("Controls")
@@ -392,51 +392,57 @@ def main():
         )
         st.markdown(highlighted_text, unsafe_allow_html=True)
 
-        # Top and bottom scoring tokens side by side
-        col_top, col_bottom = st.columns(2)
+        # Statistics and top tokens side by side
+        col_stats, col_tokens = st.columns([1, 2])
 
-        with col_top:
-            st.write("**Top 20 DEPLOYMENT tokens:**")
-            sorted_indices = sorted(
-                range(len(scores)), key=lambda i: scores[i], reverse=True
-            )
-            for i, idx in enumerate(sorted_indices[:20]):
-                token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
-                score = scores[idx]
-                st.write(f"{i + 1}. '{token}': {score:.4f}")
+        with col_stats:
+            st.subheader("Statistics")
 
-        with col_bottom:
-            st.write("**Top 20 EVALUATION tokens:**")
-            sorted_indices_lowest = sorted(range(len(scores)), key=lambda i: scores[i])
-            for i, idx in enumerate(sorted_indices_lowest[:20]):
-                token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
-                score = scores[idx]
-                st.write(f"{i + 1}. '{token}': {score:.4f}")
+            # Calculate statistics
+            scores_array = np.array(scores)
+            stats = {
+                "Mean": np.mean(scores_array),
+                "Std": np.std(scores_array),
+                "Min": np.min(scores_array),
+                "Max": np.max(scores_array),
+                "Median": np.median(scores_array),
+            }
+
+            for stat_name, stat_value in stats.items():
+                st.metric(stat_name, f"{stat_value:.4f}")
+
+            # Score distribution
+            fig_dist = create_score_distribution_plot(scores, f"{title} Distribution")
+            st.plotly_chart(fig_dist, use_container_width=True)
+
+            # Token summary
+            st.write(f"**Total tokens:** {len(scores)}")
+
+        with col_tokens:
+            # Top and bottom scoring tokens side by side
+            col_top, col_bottom = st.columns(2)
+
+            with col_top:
+                st.write("**Top 20 DEPLOYMENT tokens:**")
+                sorted_indices = sorted(
+                    range(len(scores)), key=lambda i: scores[i], reverse=True
+                )
+                for i, idx in enumerate(sorted_indices[:20]):
+                    token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
+                    score = scores[idx]
+                    st.write(f"{i + 1}. '{token}': {score:.4f}")
+
+            with col_bottom:
+                st.write("**Top 20 EVALUATION tokens:**")
+                sorted_indices_lowest = sorted(
+                    range(len(scores)), key=lambda i: scores[i]
+                )
+                for i, idx in enumerate(sorted_indices_lowest[:20]):
+                    token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
+                    score = scores[idx]
+                    st.write(f"{i + 1}. '{token}': {score:.4f}")
 
     with col2:
-        st.subheader("Statistics")
-
-        # Calculate statistics
-        scores_array = np.array(scores)
-        stats = {
-            "Mean": np.mean(scores_array),
-            "Std": np.std(scores_array),
-            "Min": np.min(scores_array),
-            "Max": np.max(scores_array),
-            "Median": np.median(scores_array),
-        }
-
-        for stat_name, stat_value in stats.items():
-            st.metric(stat_name, f"{stat_value:.4f}")
-
-        # Score distribution
-        fig_dist = create_score_distribution_plot(scores, f"{title} Distribution")
-        st.plotly_chart(fig_dist, use_container_width=True)
-
-        # Token summary
-        st.write(f"**Total tokens:** {len(scores)}")
-
-    with col3:
         # Create colorbar
         if score_type == "probability_class_0":
             min_val, max_val = 0.0, 1.0
