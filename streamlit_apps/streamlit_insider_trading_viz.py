@@ -217,7 +217,7 @@ def create_colorbar(
     min_val: float, max_val: float, color_scheme: str = "RdYlBu_r", title: str = "Score"
 ):
     """Create a large vertical colorbar using matplotlib and display as an image."""
-    fig, ax = plt.subplots(figsize=(0.5, 8))  # width, height in inches
+    fig, ax = plt.subplots(figsize=(0.5, 2))  # width, height in inches
     norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
     mpl.colorbar.ColorbarBase(
         ax, cmap=plt.get_cmap(color_scheme), norm=norm, orientation="vertical"
