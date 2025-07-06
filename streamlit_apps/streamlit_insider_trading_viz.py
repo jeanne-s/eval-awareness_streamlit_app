@@ -373,7 +373,7 @@ def main():
             st.sidebar.write(f"**{k}:** {v}")
 
     # Main content
-    col1, col2, col3 = st.columns([2, 1, 0.3])
+    col1, col2 = st.columns([4, 1])
 
     with col1:
         if len(tokens) > 500:
@@ -392,8 +392,8 @@ def main():
         )
         st.markdown(highlighted_text, unsafe_allow_html=True)
 
-        # Statistics and top tokens side by side
-        col_stats, col_tokens = st.columns([2, 1])
+        # Statistics and tokens in three columns
+        col_stats, col_deploy, col_eval = st.columns([2, 1, 1])
 
         with col_stats:
             st.subheader("Statistics")
@@ -418,29 +418,23 @@ def main():
             # Token summary
             st.write(f"**Total tokens:** {len(scores)}")
 
-        with col_tokens:
-            # Top and bottom scoring tokens side by side
-            col_top, col_bottom = st.columns(2)
+        with col_deploy:
+            st.write("**Top 20 DEPLOYMENT tokens:**")
+            sorted_indices = sorted(
+                range(len(scores)), key=lambda i: scores[i], reverse=True
+            )
+            for i, idx in enumerate(sorted_indices[:20]):
+                token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
+                score = scores[idx]
+                st.write(f"{i + 1}. '{token}': {score:.4f}")
 
-            with col_top:
-                st.write("**Top 20 DEPLOYMENT tokens:**")
-                sorted_indices = sorted(
-                    range(len(scores)), key=lambda i: scores[i], reverse=True
-                )
-                for i, idx in enumerate(sorted_indices[:20]):
-                    token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
-                    score = scores[idx]
-                    st.write(f"{i + 1}. '{token}': {score:.4f}")
-
-            with col_bottom:
-                st.write("**Top 20 EVALUATION tokens:**")
-                sorted_indices_lowest = sorted(
-                    range(len(scores)), key=lambda i: scores[i]
-                )
-                for i, idx in enumerate(sorted_indices_lowest[:20]):
-                    token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
-                    score = scores[idx]
-                    st.write(f"{i + 1}. '{token}': {score:.4f}")
+        with col_eval:
+            st.write("**Top 20 EVALUATION tokens:**")
+            sorted_indices_lowest = sorted(range(len(scores)), key=lambda i: scores[i])
+            for i, idx in enumerate(sorted_indices_lowest[:20]):
+                token = tokens[idx] if idx < len(tokens) else f"Token_{idx}"
+                score = scores[idx]
+                st.write(f"{i + 1}. '{token}': {score:.4f}")
 
     with col2:
         # Create colorbar
