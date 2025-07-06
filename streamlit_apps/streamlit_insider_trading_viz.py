@@ -254,7 +254,7 @@ def main():
 
     # Build the file path
     selected_file = (
-        f"../output_data/probe_projections/QwQ-32B/{selected_layer}/{selected_dataset}"
+        f"output_data/probe_projections/QwQ-32B/{selected_layer}/{selected_dataset}"
     )
 
     # Check if files exist
